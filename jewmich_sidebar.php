@@ -55,7 +55,12 @@ function jewmich_sidebar_admin_page() {
 function jewmich_sidebar_shortcode($atts) {
 	global $wpdb;
 	$query = "SELECT position, description, url, img_src, date_type, date_start, date_end FROM Sidebar ORDER BY position ASC";
-	return jewmich_sidebar_filter_rows_by_date($wpdb->get_results($query, ARRAY_A));
+	$images = jewmich_sidebar_filter_rows_by_date($wpdb->get_results($query, ARRAY_A));
+	$html = '';
+	foreach ($images as $image) {
+		$html .= '<p><a href="' . $image['url'] . '"><img border="0" src="' . $image['img_src'] . '" alt="' . $image['description'] . '"/></a></p>';
+	}
+	return $html;
 }
 
 function jewmich_sidebar_filter_rows_by_date($rows) {
