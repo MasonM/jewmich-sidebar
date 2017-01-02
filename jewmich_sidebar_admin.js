@@ -1,12 +1,12 @@
 function dateTypeChange() {
-	$(this).closest('tr')
+	jQuery(this).closest('tr')
 		.find('.date-range')
-			.toggle($(this).val() !== '')
+			.toggle(jQuery(this).val() !== '')
 			.end()
-		.find('select[name^=month_start_<?= CAL_GREGORIAN ?>], select[name^=month_end_<?= CAL_GREGORIAN ?>]')
-			.toggle($(this).val() === 'Gregorian')
+		.find('select[name^=month_start_Gregorian], select[name^=month_end_Gregorian]')
+			.toggle(jQuery(this).val() === 'Gregorian')
 			.end()
-		.find('select[name^=month_start_<?= CAL_JEWISH ?>], select[name^=month_end_<?= CAL_JEWISH ?>]')
-			.toggle($(this).val() === 'Hebrew');
+		.find('select[name^=month_start_Hebrew], select[name^=month_end_Hebrew]')
+			.toggle(jQuery(this).val() === 'Hebrew');
 }
-$('select[name^=date_type]').on('change', dateTypeChange).trigger('change');
+jQuery('select[name^=date_type]').on('change', dateTypeChange).trigger('change');

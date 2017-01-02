@@ -16,9 +16,11 @@ if (!empty($_POST['delete'])) {
 	foreach ($_POST['id'] as $i => $id) {
 		$row = array();
 		if ($id) $row['id'] = $id;
-		foreach (array('position', 'description', 'url', 'img_src', 'date_type') as $keyName) {
+		foreach (array('position', 'description', 'url', 'img_src') as $keyName) {
 			$row[$keyName] = $_POST[$keyName][$i];
 		}
+
+		$row['date_type'] = ($_POST['date_type'] === 'Gregorian') ? CAL_GREGORIAN : CAL_JEWISH;
 
 		if (empty($id) && (empty($row['position']) || empty($row['description']) || empty($row['url']))) {
 			continue;
@@ -27,7 +29,7 @@ if (!empty($_POST['delete'])) {
 		if (empty($row['date_type'])) {
 			$row['date_type'] = $row['date_start'] = $row['date_end'] = null;
 		} else {
-			$type = ($row['date_type'] === 'Gregorian') ? CAL_GREGORIAN : CAL_JEWISH;
+			$type = $_POST['date_date'];
 			$row['date_start'] = '0000-' . $_POST["month_start_$type"][$i] . '-' . $_POST["day_start"][$i];
 			$row['date_end'] = '0000-' . $_POST["month_end_$type"][$i] . '-' . $_POST["day_end"][$i];
 		}
@@ -62,12 +64,17 @@ $rows = $wpdb->get_results('
 
 // append blank entry for entering a new row
 $rows[] = array_fill_keys($postKeys, '');
+
+$dateTypes = [
+	'Gregorian' => getCalendarMonths(CAL_GREGORIAN),
+	'Hebrew' => getCalendarMonths(CAL_JEWISH),
+];
 ?>
 <h1>Sidebar Editor</h1>
 <? if ($message): ?>
 <h3><?= $message ?></h3>
 <? endif ?>
-<form action="/admin/sidebar" method="post">
+<form method="post">
 	<table>
 		<tr>
 			<th>Delete</th>
@@ -102,7 +109,7 @@ $rows[] = array_fill_keys($postKeys, '');
 			<td>
 				<select name="date_type[<?= $i ?>]">
 					<option value=""<?= is_null($row['date_type']) ? ' selected' : '' ?>>N/A</option>
-					<? foreach (array('Gregorian', 'Hebrew') as $dateType): ?>
+					<? foreach (array_keys($dateTypes) as $dateType): ?>
 					<option value="<?= $dateType ?>"<?= 
 						($dateType === $row['date_type']) ? 'selected' : ''
 					?>><?= $dateType ?></option>
@@ -111,9 +118,9 @@ $rows[] = array_fill_keys($postKeys, '');
 			</td>
 			<? foreach (array('start', 'end') as $rangeType): ?>
 			<td class="date-range">
-				<? foreach(array(CAL_GREGORIAN, CAL_JEWISH) as $calType): ?>
-				<select name="month_<?= $rangeType ?>_<?= $calType ?>[<?= $i ?>]">
-					<? foreach (getCalendarMonths($calType) as $monthNum => $monthName): ?>
+				<? foreach ($dateTypes as $dateType => $months): ?>
+				<select name="month_<?= $rangeType ?>_<?= $dateType ?>[<?= $i ?>]">
+					<? foreach ($months as $monthNum => $monthName): ?>
 					<option value="<?= $monthNum ?>"<?= 
 						($row['month_' . $rangeType] == $monthNum) ? ' selected' : ''
 					?>><?= $monthName ?></option>
