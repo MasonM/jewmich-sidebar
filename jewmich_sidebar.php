@@ -112,4 +112,3 @@ function isCurrentDateBetween($startJd, $endJd) {
    $curJd = unixtojd();
    return $startJd <= $curJd && $curJd <= $endJd;
 }
-
