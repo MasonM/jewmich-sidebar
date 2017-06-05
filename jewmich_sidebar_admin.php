@@ -16,11 +16,9 @@ if (!empty($_POST['delete'])) {
 	foreach ($_POST['id'] as $i => $id) {
 		$row = array();
 		if ($id) $row['id'] = $id;
-		foreach (array('position', 'description', 'url', 'img_src') as $keyName) {
+		foreach (array('position', 'description', 'url', 'img_src', 'date_type') as $keyName) {
 			$row[$keyName] = $_POST[$keyName][$i];
 		}
-
-		$row['date_type'] = ($_POST['date_type'] === 'Gregorian') ? CAL_GREGORIAN : CAL_JEWISH;
 
 		if (empty($id) && (empty($row['position']) || empty($row['description']) || empty($row['url']))) {
 			continue;
@@ -29,9 +27,8 @@ if (!empty($_POST['delete'])) {
 		if (empty($row['date_type'])) {
 			$row['date_type'] = $row['date_start'] = $row['date_end'] = null;
 		} else {
-			$type = $_POST['date_date'];
-			$row['date_start'] = '0000-' . $_POST["month_start_$type"][$i] . '-' . $_POST["day_start"][$i];
-			$row['date_end'] = '0000-' . $_POST["month_end_$type"][$i] . '-' . $_POST["day_end"][$i];
+			$row['date_start'] = '0000-' . $_POST["month_start_" . $row['date_type']][$i] . '-' . $_POST["day_start"][$i];
+			$row['date_end'] = '0000-' . $_POST["month_end_" . $row['date_type']][$i] . '-' . $_POST["day_end"][$i];
 		}
 
 		if (empty($id)) {
